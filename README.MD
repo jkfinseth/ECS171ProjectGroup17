@@ -12,7 +12,7 @@ If the requirements aren't installed (notably `flask`), then a virtual environme
 
 #### Windows
 
-`.\venv\Scripts\activate`
+`.\.venv\Scripts\activate`
 
 #### MacOS/Linux
 
@@ -28,4 +28,4 @@ Be sure the environment is activated with step 2 from above
 
 `python -m flask --app server run`
 
-Then open `localhost:5000` on your browser
+Then open `http://localhost:5000` on your browser
