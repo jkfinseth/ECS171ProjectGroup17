@@ -3,7 +3,6 @@ import random
 from flask import Flask, request
 from sklearn.model_selection import train_test_split
 from models.decision_tree import DecisionTree
-from models.ensemble import Ensemble
 from models.naive_bayes_categorical import NaiveBayesCategorical
 from models.naive_bayes_numerical import NaiveBayesNumerical
 from models.neural_network import NeuralNetwork
@@ -40,10 +39,8 @@ nb_cat_model.train()
 nb_num_model = NaiveBayesNumerical(X, y_bin, included_numerical_vars)
 nb_num_model.train()
 
-dt_model = DecisionTree(X, y_bin, X_train, X_test)
-dt_model.train()
-
-ensemble = Ensemble(nn=nn_model, nb_cat=nb_cat_model, nb_num=nb_num_model, dt=dt_model)
+dt_model = DecisionTree()
+dt_model.load()
 
 app = Flask(__name__)
 
@@ -71,15 +68,12 @@ def predict_nb_num():
 @app.route("/api/dt", methods=['POST'])
 def predict_dt():
     input_df = pd.DataFrame([request.get_json()]);
-    return {
-        "prediction": int(dt_model.predict(input_df))
-    }
+    pre, post, both = dt_model.predict(input_df)
 
-@app.route("/api/en", methods=['POST'])
-def predict_en():
-    input_df = pd.DataFrame([request.get_json()]);
     return {
-        "prediction": int(ensemble.predict(input_df))
+        "pre": int(pre),
+        "post": int(post),
+        "both": int(both)
     }
 
 data_dict = hotel_df.to_dict(orient="records")

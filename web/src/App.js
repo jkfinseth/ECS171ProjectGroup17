@@ -7,23 +7,25 @@ const { Text } = Typography;
 function App() {
   const [form] = Form.useForm();
   const [nn, setNn] = useState('N/A');
-  const [nb_cat, setNbCat] = useState('N/A');
-  const [nb_num, setNbNum] = useState('N/A');
-  const [dt, setDt] = useState('N/A');
-  const [en, setEn] = useState('N/A');
+  const [nbCat, setNbCat] = useState('N/A');
+  const [nbNum, setNbNum] = useState('N/A');
+  const [dtPre, setDtPre] = useState('N/A');
+  const [dtPost, setDtPost] = useState('N/A');
+  const [dtBoth, setDtBoth] = useState('N/A');
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
     let sum = 0;
     if (nn !== '') sum++;
-    if (nb_cat !== '') sum++;
-    if (nb_num !== '') sum++;
-    if (dt !== '') sum++;
-    if (en !== '') sum++;
+    if (nbCat !== '') sum++;
+    if (nbNum !== '') sum++;
+    if (dtPre !== '') sum++;
+    if (dtPost !== '') sum++;
+    if (dtBoth !== '') sum++;
 
     setProgress(sum);
 
-  }, [nn, nb_cat, nb_num, dt, en])
+  }, [nn, nbCat, nbNum, dtPre, dtPost, dtBoth])
 
   function handleRandomOb() {
     fetch('/api/example_data')
@@ -52,8 +54,9 @@ function App() {
     setNn('');
     setNbCat('');
     setNbNum('');
-    setDt('');
-    setEn('');
+    setDtPre('');
+    setDtPost('');
+    setDtBoth('');
     setProgress(0);
 
     fetch('/api/nn', {
@@ -100,20 +103,10 @@ function App() {
       body: JSON.stringify(values)
     }).then(res => res.json())
       .then(data => {
-        console.log('DT:', data.prediction);
-        setDt(data.prediction === 0 ? "Not Canceled" : "Canceled");
-      })
-
-    fetch('/api/en', {
-      method: 'POST',
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(values)
-    }).then(res => res.json())
-      .then(data => {
-        console.log('EN:', data.prediction);
-        setEn(data.prediction === 0 ? "Not Canceled" : "Canceled");
+        console.log('DT:', data.pre, data.post, data.both);
+        setDtPre(data.pre === 0 ? "Not Canceled" : "Canceled");
+        setDtPost(data.post === 0 ? "Not Canceled" : "Canceled");
+        setDtBoth(data.both === 0 ? "Not Canceled" : "Canceled");
       })
   }
 
@@ -316,15 +309,18 @@ function App() {
         <Col xs={24} sm={8}>
           <Card title="Predictions" bodyStyle={{ position: "relative" }}>
             <div className="Progress"><div style={{
-              width: `${progress * 20}%`,
+              width: `${progress * 16.66}%`,
             }} className="ProgressBar" /></div>
 
             <div style={{ opacity: progress < 5 ? 0.4 : 1 }}>
               <b>Neural Network:</b> <Text type={nn === "Canceled" ? "danger" : "success"}>{nn}</Text><br />
-              <b>Naive Bayes Cat.:</b> <Text type={nb_cat === "Canceled" ? "danger" : "success"}>{nb_cat}</Text><br />
-              <b>Naive Bayes Num.:</b> <Text type={nb_num === "Canceled" ? "danger" : "success"}>{nb_num}</Text><br />
-              <b>Decision Tree:</b> <Text type={dt === "Canceled" ? "danger" : "success"}>{dt}</Text><br />
-              <b>Ensemble:</b> <Text type={en === "Canceled" ? "danger" : "success"}>{en}</Text><br />
+              <br/>
+              <b>Naive Bayes Cat.:</b> <Text type={nbCat === "Canceled" ? "danger" : "success"}>{nbCat}</Text><br />
+              <b>Naive Bayes Num.:</b> <Text type={nbNum === "Canceled" ? "danger" : "success"}>{nbNum}</Text><br />
+              <br/>
+              <b>DT Pre-Prune:</b> <Text type={dtPre === "Canceled" ? "danger" : "success"}>{dtPre}</Text><br />
+              <b>DT Post-Prune:</b> <Text type={dtPost === "Canceled" ? "danger" : "success"}>{dtPost}</Text><br />
+              <b>DT Both Pre & Post:</b> <Text type={dtBoth === "Canceled" ? "danger" : "success"}>{dtBoth}</Text><br />
             </div>
           </Card>
         </Col>
