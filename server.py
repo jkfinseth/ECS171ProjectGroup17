@@ -1,6 +1,6 @@
 import pandas as pd
 import random
-from flask import Flask, request
+from flask import Flask, request, send_file
 from sklearn.model_selection import train_test_split
 from models.decision_tree import DecisionTree
 from models.naive_bayes_categorical import NaiveBayesCategorical
@@ -42,7 +42,9 @@ nb_num_model.train()
 dt_model = DecisionTree()
 dt_model.load()
 
-app = Flask(__name__)
+# flask server
+
+app = Flask(__name__, static_folder='web/build', static_url_path="/")
 
 @app.route("/api/nn", methods=['POST'])
 def predict_nn():
@@ -88,3 +90,8 @@ def get_random_data():
         out[column] = data_dict[random.randint(0, len(hotel_df) - 1)][column]
 
     return out
+
+# serve index
+@app.route('/')
+def index():
+    return send_file('web/build/index.html')
